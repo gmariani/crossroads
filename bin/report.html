@@ -1,0 +1,301 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Crossroads Sign In Report</title>
+	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.10.custom.css" type="text/css"/>
+	<link rel="stylesheet" href="css/report.css" type="text/css" />
+	<script src="js/jquery-1.5.1.min.js"></script>
+	<script src="js/jquery-ui-1.8.10.custom.min.js"></script>
+	<script src="js/highcharts.js"></script>
+	<script src="js/modules/exporting.js"></script>
+	
+	<script>
+	<!--
+		// Not ready for prime time
+		/*if ("webkitIndexedDB" in window) {
+			window.indexedDB = window.webkitIndexedDB;
+			window.IDBTransaction = window.webkitIDBTransaction;
+			window.IDBKeyRange = window.webkitIDBKeyRange;
+		}*/
+	
+		var crossroads = {};
+		crossroads.categories = ['trs312', 	'trs315', 	'trs316', 	'mib344', 	'mcd',	 	'trw17', 	'civilian', 'other'];
+		crossroads.labels = 	['312 TRS', '315 TRS', 	'316 TRS', 	'344 MIB', 	'MCD', 		'17 TRW', 	'Civilian', 'Other'];
+		crossroads.colors = 	['#4572A7', '#AA4643', 	'#89A54E', 	'#80699B', 	'#3D96AE', 	'#DB843D', 	'#92A8CD', 	'#A47D7C'];
+		crossroads.table = [];
+		crossroads.options = {
+			chart: {
+				renderTo: 'chartData',
+				zoomType: 'x',
+				spacingRight: 20,
+				spacingBottom: 50
+			},
+			title: {
+				text: 'Crossroads Visits'
+			},
+			subtitle: {
+				text: document.ontouchstart === undefined ?
+					'Click and drag in the plot area to zoom in' :
+					'Drag your finger over the plot to zoom in'
+			},
+			xAxis: {
+				type: 'datetime',
+				maxZoom: 24 * 60 * 60 * 1000, // 1 day
+				title: {
+					text: null
+				},
+				dateTimeLabelFormats: { // don't display the dummy year
+					hour: '%H:00',
+					month: '%e. %b',
+					year: '%Y'
+				}
+			},
+			yAxis: {
+				title: {
+					text: 'Visits'
+				},
+				min: 0,
+				startOnTick: false,
+				showFirstLabel: false
+			},
+			tooltip: {
+				formatter: function() {
+					var s;
+					if (this.point.name) { // the pie chart
+						s = '' + this.point.name + ': ' + this.y + ' visits';
+					} else { // the line chart
+                   		s = '<b>' + this.series.name + '</b><br/> ' + Highcharts.dateFormat('%H:00 %e %b', this.x) + ': ' + this.y +' visits';
+					}
+					return s;
+				}
+			},
+			labels: {
+				items: [{
+					html: 'Total visits',
+					style: {
+						left: '70px',
+						top: '8px',
+						color: 'black'				
+					}
+				}]
+			},
+			legend: {
+				align: 'left',
+				verticalAlign: 'bottom',
+				y: 20,
+				floating: true,
+				borderWidth: 0
+			},
+			series: []
+		};
+		
+		$(document).ready(function() {
+			// Init date pickers
+			var dates = $("#from, #to").datepicker({
+				defaultDate: "+1w",
+				changeMonth: true,
+				numberOfMonths: 3,
+				onSelect: function(selectedDate) {
+					var option = this.id == "from" ? "minDate" : "maxDate",
+					instance = $(this).data("datepicker"),
+					date = $.datepicker.parseDate(instance.settings.dateFormat ||
+												$.datepicker._defaults.dateFormat,
+												selectedDate, instance.settings);
+					dates.not(this).datepicker("option", option, date);
+				}
+			});
+		});
+		
+		// Returns a Javascript Date in SQL date/time format
+		function toSQLDate(date) {
+			var str = date.getFullYear() + '-' + zero(date.getMonth() + 1) + '-' + zero(date.getDate());
+			str += ' ' + zero(date.getHours()) + ':' + zero(date.getMinutes()) + ':' + zero(date.getSeconds());
+			return str;
+		}
+		
+		// When the minutes are less than 10, add a zero in front
+		function zero(num) {
+			if(num < 10) return '0' + num;
+			return num;
+		}
+		
+		function showData() {
+			// Remove rows
+			var table = document.getElementById('tableData'),
+			len = table.childNodes.length;
+			while (table.hasChildNodes()) {
+				table.removeChild(table.firstChild);
+			}
+			
+			// Populate Data
+			var startDate = new Date(document.getElementById('from').value.split(',').reverse()),
+			endDate = new Date(document.getElementById('to').value.split(',').reverse());
+			startDate = startDate == 'Invalid Date' ? null : startDate;
+			endDate = endDate == 'Invalid Date' ? null : endDate;
+			
+			var url = 'http://localhost/crossroads/bin/services.php';
+			var params = 'action=getReport&start=' + encodeURIComponent(toSQLDate(startDate)) + '&end=' + encodeURIComponent(toSQLDate(endDate));
+			var req = new XMLHttpRequest();
+			req.onreadystatechange = processReqChange;
+			req.open('POST', url, true);
+			req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			req.send(params);
+			function processReqChange() {
+				if(req.readyState == 4 && req.status == 200) {
+					var json = JSON.parse(req.responseText);
+					console.log('json', json);
+					processData(json, startDate, endDate);
+				}
+			}
+		}
+		
+		function getHoursDiff(date1, date2) {
+			// The number of milliseconds in one hour
+			var ONE_HOUR = 1000 * 60 * 60;
+			
+			// Calculate the difference in milliseconds
+			var diff_ms = Math.abs(date1.getTime() - date2.getTime());
+			
+			// Convert back to days and return
+			return ~~(diff_ms/ONE_HOUR);
+		}
+		
+		function getSeriesIndex(array, name) {
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].name == name) return i;
+			}
+			return -1;
+		}
+		
+		function processData(json, startDate, endDate) {
+			var table = document.getElementById('tableData'),
+			total = json.visits.length;
+			
+			crossroads.options.series = [];
+			crossroads.table = {};
+			
+			// Table Header
+			var tr = document.createElement('tr'),
+			td = document.createElement('th');
+			td.innerHTML = 'Squadron';
+			tr.appendChild(td);
+			
+			td = document.createElement('th');
+			td.innerHTML = '| Numbers per Unit';
+			tr.appendChild(td);
+			table.appendChild(tr);
+			//
+			
+			// Maybe use webworkers for this loop
+			for(var i = 0; i < total; i++) {
+				var visit = json.visits[i],
+				curDate = new Date(visit.date),
+				j = getSeriesIndex(crossroads.options.series, visit.name);
+				if (j == -1) {
+					crossroads.options.series.push({
+						name: visit.name,
+						data: [],
+						lastDate: new Date(1900, 0, 0),
+						lastIndex: 0
+					});
+					j = crossroads.options.series.length - 1;
+					crossroads.table[visit.name] = 0;
+				}
+				
+				// Any consecutive visits
+				if (getHoursDiff(curDate, crossroads.options.series[j].lastDate) <= 0) {
+					crossroads.options.series[j].data[crossroads.options.series[j].lastIndex][1]++;
+				}
+				// New visits
+				else {
+					crossroads.options.series[j].lastDate = curDate;
+					crossroads.options.series[j].data.push([
+						Date.UTC(curDate.getYear(), curDate.getMonth(), curDate.getDate(), curDate.getHours()),
+						1
+					]);
+					crossroads.options.series[j].lastIndex = crossroads.options.series[j].data.length - 1;
+				}
+				
+				// Update category total
+				crossroads.table[visit.name] += 1;
+			}
+			
+			// Initialize Pie data
+			var pieIndex = crossroads.options.series.push({
+				type: 'pie',
+				name: 'Total visits',
+				data: [],
+				center: [100, 80],
+				size: 100,
+				showInLegend: false,
+				dataLabels: {
+					enabled: false
+				}
+			});
+			
+			// Go through the tallied up table rows and add them to the table
+			var j = 0;
+			for (var i in crossroads.table) {
+				// Name
+				tr = document.createElement('tr'),
+				td = document.createElement('td');
+				td.innerHTML = i;
+				tr.appendChild(td);
+				
+				// Amount
+				td = document.createElement('td');
+				td.innerHTML = crossroads.table[i];
+				tr.appendChild(td);
+				table.appendChild(tr);
+				
+				// Add to pie chart
+				crossroads.options.series[pieIndex - 1].data.push({
+					name: i,
+					y: crossroads.table[i],
+					color: crossroads.colors[j]
+				});
+				j++;
+			}
+			console.log('crossroads', crossroads);
+			// Draw Chart
+			var chart = new Highcharts.Chart(crossroads.options);
+			
+			// Table Footer
+			tr = document.createElement('tfoot');
+			td = document.createElement('td');
+			td.innerHTML = 'Grand Total';
+			tr.appendChild(td);
+			
+			td = document.createElement('td');
+			td.innerHTML = total;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			// Show chart
+			container.className = 'show';
+		}
+	//-->
+	</script>
+</head>
+
+<body>
+	<header>
+		<h1>Crossroads Numbers</h1>
+	</header>
+	
+	<nav>
+		<h4>Select Date Range</h4><label for="from">From</label><input type="text" id="from" name="from"/><label for="to">To</label><input type="text" id="to" name="to"/> <button type="button" onClick="showData()" id="btnView" name="btnView" >View</button>
+	</nav>
+	
+	<section id="container" class="hide">
+		<a id="printLink" href="javascript:window.print();return false">Print</a>
+		<div id="chartData" style="width:800px; height:400px; margin:0 auto"></div>
+		<table id="tableData"></table>
+	</section>
+	
+	<footer>
+		<a href="signin.html"><< Back to Sign In</a>
+	</footer>
+</body>
+</html>

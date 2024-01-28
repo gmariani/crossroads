@@ -1,0 +1,27 @@
+{
+	// Required
+	"name": "Crossroads Sign-in",
+	"version": "1.0.0",
+
+	// Recommended
+	"description": "Crossroads visitor log",
+	/*"icons": {
+		"16": "icon_16.png",
+		"128": "icon_128.png"
+	},*/
+	//"default_locale": "en",
+
+	// Pick one (or none)
+	// "browser_action"
+	// "page_action"
+	// "theme"
+	"app": {
+		"launch": {
+			"local_path": "signin.html"
+		}
+	},
+
+	"permissions": [
+		"unlimitedStorage"
+	]
+}

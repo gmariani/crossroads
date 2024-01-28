@@ -1,0 +1,262 @@
+/* CSS Document */
+
+/* hbox and vbox classes */
+.hbox {
+        display: -webkit-box;
+        -webkit-box-orient: horizontal;
+        /*-webkit-box-align: stretch;*/
+		-webkit-box-align: center;
+ 
+        display: -moz-box;
+        -moz-box-orient: horizontal;
+        -moz-box-align: stretch;
+ 
+        display: box;
+        box-orient: horizontal;
+        box-align: stretch;
+}
+ 
+.hbox> * {
+        -webkit-box-flex: 0;
+        -moz-box-flex: 0;
+        box-flex: 0;
+        display: block;
+}
+ 
+.vbox {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-box-align: stretch;
+ 
+        display: -moz-box;
+        -moz-box-orient: vertical;
+        -moz-box-align: stretch;
+ 
+        display: box;
+        box-orient: vertical;
+        box-align: stretch;
+}
+ 
+.vbox> * {
+        -webkit-box-flex: 0;
+        -moz-box-flex: 0;
+        box-flex: 0;
+       /* display: block;*/
+}
+ 
+.spacer {
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        box-flex: 1;
+}
+ 
+.reverse {
+        -webkit-box-direction: reverse;
+        -moz-box-direction: reverse;
+        box-direction: reverse;
+}
+
+.start {
+        -webkit-box-pack: start;
+        -moz-box-pack: start;
+        box-pack: start;
+}
+ 
+.end {
+        -webkit-box-pack: end;
+        -moz-box-pack: end;
+        box-pack: end;
+}
+ 
+.center {
+        -webkit-box-pack: center;
+        -moz-box-pack: center;
+        box-pack: center;
+}
+
+.justify {
+        -webkit-box-pack: justify;
+        -moz-box-pack: justify;
+        box-pack: justify;
+}
+
+.expand {
+	width: 100%;
+	height: 100%;
+}
+
+header {
+	padding-top: 175px;
+}
+header h1 {
+	font-size:50px;
+	margin:0;
+	font-style:italic;
+	/*padding:20px 0 0 20px;
+	color: #333;
+	text-shadow: 1px 1px 1px #aaa;*/
+}
+
+header h1 span {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-style:normal;
+}
+
+body {
+	background:url(../imgs/Crossroads.jpg) no-repeat bottom center fixed;
+	background-size:cover;
+	background-color:#E7ECF1;
+	font-family: georgia,"Bitstream Charter",serif;
+	color: #fff;
+	text-align:center;
+	text-shadow: 0px 1px 2px #333;
+	margin: 0;
+}
+
+section img {
+	padding:25px 50px 15px 50px;
+}
+
+section p {
+	margin:0;
+	font-size:20px;
+	font-style:italic;
+	font-weight:bold;
+	text-shadow: 0px 0px 1px #000;
+	opacity:0;
+}
+.show {
+	
+	opacity:1;
+}
+.hide {
+	-webkit-transition: opacity 1s ease-out;
+	opacity:0;
+}
+
+section ul {
+	padding:0;
+	margin-top:20px;
+}
+section li {
+	list-style-type:none;
+}
+
+section li a:hover {
+	color: #000;
+	opacity:1;
+}
+
+section li a {
+	-webkit-transition: opacity 1s ease-out, color 1s ease-out;
+	
+	-webkit-box-shadow: 3px 3px 10px #666;
+	color: #6D7581;
+	text-decoration:none;
+	-webkit-border-radius:6px;
+	opacity:0.70;
+	/*background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0, rgb(171,194,209)),
+		color-stop(1, rgb(228,234,240))
+	);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0, rgb(62,114,148)),
+		color-stop(1, rgb(228,234,240))
+	);*/
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0, rgb(100,150,175)),
+		color-stop(1, rgb(228,234,240))
+	);
+
+	display: block;
+    font-size: 35px;
+    font-style: italic;
+    height: 85px;
+	width: 200px;
+    line-height: 55px;
+    padding: 0px 10px 0 10px;
+	margin-bottom:15px;
+}
+
+section li a span {
+    display: block;
+    font-family: georgia,"Bitstream Charter",serif;
+    font-size: 35px;
+    font-style: italic;
+    font-weight: normal;
+    height: 95px;
+    line-height: 18px;
+    margin-left: -50px;
+    padding: 20px 10px 0 100px;
+    position: relative;
+}
+
+.trs312 {
+	background: url("../imgs/312th-emblem.png") no-repeat scroll 0 0 transparent;
+}
+
+.trs315 {
+	background:url("../imgs/315th-emblem.png") no-repeat scroll 0 0 transparent;
+}
+.trs316 {
+	background:url("../imgs/316th-emblem.png") no-repeat scroll 0 0 transparent;
+}
+.mib344 {
+	background:url("../imgs/344th-emblem.png") no-repeat scroll 0 0 transparent;
+}
+.mcd {
+	background:url("../imgs/marine-emblem.png") no-repeat scroll 0 0 transparent;
+}
+.trw17 {
+	background:url("../imgs/17th-emblem.png") no-repeat scroll 0 0 transparent;
+}
+.trg17 {
+	background:url("../imgs/af17trg.png") no-repeat scroll 0 0 transparent;
+}
+.navy {
+	background:url("../imgs/navy.png") no-repeat scroll 0 0 transparent;
+}
+
+.hiddenLink, .hiddenLink:visited, .hiddenLink:link {
+	-webkit-transition: opacity 0.5s ease-out;
+	text-decoration: none;
+	color: #fff;
+	opacity: 0.25;
+	font-size: 11px;
+	font-family: "Trebuchet MS",sans-serif;
+	line-height: 1.231;
+	text-shadow: 0px 1px 2px #000;
+	margin-left:8px;
+}
+.hiddenLink:hover {
+	opacity:1;
+}
+
+footer {
+	-webkit-box-align: center;
+}
+
+footer p {
+	font-family: MetaBlack,"Trebuchet MS",sans-serif;
+	color: #ff0000;
+	font-weight:bold;
+	background-color: rgba(255, 255, 255, 0.6);
+}
+footer p span {
+	font-size: 20px;
+}
+
+time {
+	font-size: 20px;
+	font-weight:bold;
+	margin-right:8px;
+}

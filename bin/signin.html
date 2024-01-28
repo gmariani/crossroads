@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Crossroads Sign In</title>
+	<link rel="stylesheet" href="css/main.css" type="text/css" />
+	
+	<script>
+	<!--
+		function init() {
+			updateTime();
+		}
+		
+		// Update clock at bottom
+		function updateTime() {
+			var now = new Date(),
+			el = document.getElementById('curTime'),
+			meridian = now.getHours() > 11 ? 'PM' : 'AM';
+			el.innerHTML = now.getDate() + '/' + (now.getMonth() + 1) + '/' + now.getFullYear() + ' ' + now.getHours() + ':' + zero(now.getMinutes()) + ' ' + meridian;
+			el.setAttribute('datetime', now.toDateString());
+			setTimeout(updateTime, 1000);
+		}
+		
+		// When the minutes are less than 10, add a zero in front
+		function zero(num) {
+			if(num < 10) return '0' + num;
+			return num;
+		}
+		
+		function formatDate(d) {
+			return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+		}
+		
+		// Save each count by category
+		function save(category) {
+			var url = 'http://localhost/crossroads/bin/services.php';
+			var params = 'action=addVisit&squadron=' + encodeURIComponent(category);
+			var req = new XMLHttpRequest();
+			req.onreadystatechange = processReqChange;
+			req.open('POST', url, true);
+			req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			req.send(params);
+			function processReqChange() {
+				if(req.readyState == 4 && req.status == 200) {
+					var json = JSON.stringify(req.responseText);
+					console.log(json.success);
+				}
+			}
+			
+			// Show Thanks
+			var thanks = document.getElementById('thanks');
+			thanks.className = 'show';
+			setTimeout("thanks.className='hide'", 100);
+		}
+	//-->
+	</script>
+</head>
+
+<body onLoad="init()" class="vbox center">
+	<div class="vbox center expand">
+		<header>
+			<h1>Welcome to <span>Crossroads</span>, please sign in!</h1>
+		</header>
+		
+		<div class="hbox center">
+			<section>
+				<ul>
+					<li><a href="#" title="312th Training Squadron" onClick="save('312 TRS')"><span class="trs312">312 TRS</span></a></li>
+					<li><a href="#" title="315th Training Squadron" onClick="save('315 TRS')"><span class="trs315">315 TRS</span></a></li>
+					<li><a href="#" title="316th Training Squadron" onClick="save('316 TRS')"><span class="trs316">316 TRS</span></a></li>
+					<li><a href="#" title="344th Military Intelligence Battalion" onClick="save('344 MIB')"><span class="mib344">344 MIB</span></a></li>
+					<li><a href="#" title="Navy Detachment" onClick="save('Navy Detachment')"><span class="navy">Navy</span></a></li>
+				</ul>
+			</section>
+			
+			<section>
+				<img src="imgs/aetc.png" alt="Air Education and Training Command"/>
+				<p id="thanks">Thank You!</p>
+				<img src="imgs/chaplaincorps.png" alt="United States Air Force Chaplain Corps" />
+			</section>
+			
+			<section>
+				<ul>
+					<li><a href="#" title="Marine Corp Detachment" onClick="save('Marine Corps Det')"><span class="mcd">MCD</span></a></li>
+					<li><a href="#" title="17th Training Wing" onClick="save('17 TRW')"><span class="trw17">17 TRW</span></a></li>
+					<li><a href="#" title="17th Training Group" onClick="save('17 TRG')"><span class="trg17">17 TRG</span></a></li>
+					<li><a href="#" title="Civilian" onClick="save('Civilian')">Civilian</a></li>
+					<li><a href="#" title="Other" onClick="save('Other')">Other</a></li>
+				</ul>
+			</section>
+		</div>
+		
+		<footer>
+			<p>In an emergency, to contact a chaplain call -  <span>Duty Hours: 654-3424 | After Duty Hours:  654-3558</span></p>
+			<div class="hbox">
+				<a class="hiddenLink" href="report.html">Report</a>
+				<div class="spacer"></div>
+				<time id="curTime"></time>
+			</div>
+		</footer>
+	</div>
+</body>
+</html>
